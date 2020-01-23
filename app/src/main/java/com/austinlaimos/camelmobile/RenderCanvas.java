@@ -12,8 +12,6 @@ public class RenderCanvas extends Drawable {
         paint.setColor(Color.BLUE);
     }
 
-    float time = 0;
-
     @Override
     public void draw(Canvas canvas){
         int width = getBounds().width();

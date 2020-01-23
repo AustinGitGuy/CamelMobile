@@ -30,8 +30,6 @@ public class MainActivity extends AppCompatActivity {
     };
 
     private void Init(){
-
-
         updateLooper = new Looper(updateLoop, 16);
     }
 }
