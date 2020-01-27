@@ -1,6 +1,7 @@
 package com.austinlaimos.camelmobile;
 
 import androidx.appcompat.app.AppCompatActivity;
+
 import android.os.Bundle;
 import android.view.*;
 
@@ -17,6 +18,7 @@ public class MainActivity extends AppCompatActivity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         renderer = new Renderer(this);
+        setContentView(renderer);
 
         Init();
     }
@@ -24,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
     Runnable updateLoop = new Runnable(){
         @Override
         public void run(){
-            renderer.Update();
+            renderer.update();
             setContentView(renderer);
         }
     };
