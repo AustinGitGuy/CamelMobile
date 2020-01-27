@@ -5,17 +5,14 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
 
-public class Player implements Object {
+public class ShooterPiece extends Piece {
 
-    Rect rect;
-    Paint paint;
-    public Point point;
-
-    public Player(Rect rectangle, Point point, int color){
+    public ShooterPiece(Rect rectangle, Point point, int color){
         rect = rectangle;
         paint = new Paint();
         paint.setColor(color);
         this.point = point;
+        rect.set(point.x - rect.width() / 2, point.y - rect.height() / 2, point.x + rect.width() / 2, point.y + rect.height() / 2);
     }
 
     @Override
@@ -25,6 +22,11 @@ public class Player implements Object {
 
     @Override
     public void update(){
+
+    }
+
+    @Override
+    public void onTap(){
 
     }
 

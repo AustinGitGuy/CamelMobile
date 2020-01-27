@@ -1,0 +1,9 @@
+Week 1 - Figure out what I want to do
+Week 2 - Scheduling and baseboard
+Week 3 - Start the app
+Week 4 - Display pieces and pieces
+Week 5 - Tiles and piece UI
+Week 6 - Enemies
+Week 7 - Win/loss state
+Week 8 - Scene loading
+Week 9 - Main menu

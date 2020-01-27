@@ -11,31 +11,38 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import java.util.List;
+
 @SuppressLint("AppCompatCustomView")
 public class Renderer extends SurfaceView implements SurfaceHolder.Callback {
 
-    Player player;
+    List<ShooterPiece> piece;
+    List<DisplayPiece> dispPiece;
 
     Renderer(Context context){
         super(context);
 
-        player = new Player(new Rect(100, 100, 200, 200), new Point(150, 150), Color.rgb(255, 0, 0));
+        piece.add(new ShooterPiece(new Rect(100, 100, 200, 200), new Point(150, 150), Color.rgb(255, 0, 0)));
 
         setFocusable(true);
         setWillNotDraw(false);
     }
 
     public void update(){
-        player.update();
+        for(int i = 0; i < piece.size(); i++){
+            piece.get(i).update();
+        }
     }
 
     @Override
     public void draw(Canvas canvas){
         super.draw(canvas);
 
-        canvas.drawColor(Color.WHITE);
+        canvas.drawColor(Color.GREEN);
 
-        player.draw(canvas);
+        for(int i = 0; i < piece.size(); i++){
+            piece.get(i).draw(canvas);
+        }
     }
 
     @Override
@@ -55,11 +62,12 @@ public class Renderer extends SurfaceView implements SurfaceHolder.Callback {
 
     @Override
     public boolean onTouchEvent(MotionEvent event){
-
         switch(event.getAction()){
-            case MotionEvent.ACTION_MOVE:
             case MotionEvent.ACTION_DOWN:
-                player.translate((int) event.getX(), (int) event.getY());
+                break;
+
+            case MotionEvent.ACTION_MOVE:
+                break;
         }
 
         return true;

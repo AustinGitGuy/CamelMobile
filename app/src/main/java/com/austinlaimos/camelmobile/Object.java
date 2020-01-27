@@ -1,10 +1,26 @@
 package com.austinlaimos.camelmobile;
 
 import android.graphics.Canvas;
+import android.graphics.Point;
 
-public interface Object {
+public class Object {
 
-    public void draw(Canvas canvas);
-    public void update();
+    //An object just has a point in space
+    public Point point;
 
+    public void draw(Canvas canvas){
+
+    }
+
+    public void update(){
+
+    }
+
+    public void onTap(){
+
+    }
+
+    public void translate(int x, int y){
+
+    }
 }
