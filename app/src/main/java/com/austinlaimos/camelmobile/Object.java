@@ -16,7 +16,7 @@ public class Object {
 
     }
 
-    public void onTap(){
+    public void onTap(int x, int y){
 
     }
 

@@ -5,14 +5,17 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
 
-public class DisplayPiece<T> extends Piece {
+public class DisplayPiece extends Piece {
 
-    Class<T> piece;
+    Piece piece;
 
-    public DisplayPiece(Class<T> piece, Point point){
-        //TODO: Figure out how to use member variables when using templates
+    boolean tapped = false;
+
+    public DisplayPiece(Piece piece, Point point){
         this.piece = piece;
         this.point = point;
+        this.rect = new Rect(this.piece.rect.left, this.piece.rect.top, this.piece.rect.right, this.piece.rect.bottom);
+        this.paint = new Paint(this.piece.paint);
         rect.set(point.x - rect.width() / 2, point.y - rect.height() / 2, point.x + rect.width() / 2, point.y + rect.height() / 2);
     }
 
@@ -27,7 +30,22 @@ public class DisplayPiece<T> extends Piece {
     }
 
     @Override
-    public void onTap(){
-
+    public void onTap(int x, int y){
+        if(tapped){
+            if(rect.contains(x, y)){
+                tapped = false;
+            }
+            else {
+                Piece tmpPiece = new Piece(piece);
+                tmpPiece.translate(x, y);
+                Renderer.instance.piece.add(tmpPiece);
+                tapped = false;
+            }
+        }
+        else {
+            if(rect.contains(x, y)){
+                tapped = true;
+            }
+        }
     }
 }

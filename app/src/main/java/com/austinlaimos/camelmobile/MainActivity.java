@@ -2,6 +2,7 @@ package com.austinlaimos.camelmobile;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.graphics.Point;
 import android.os.Bundle;
 import android.view.*;
 
@@ -17,7 +18,11 @@ public class MainActivity extends AppCompatActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-        renderer = new Renderer(this);
+        Point size = new Point(0, 0);
+
+        getWindowManager().getDefaultDisplay().getSize(size);
+
+        renderer = new Renderer(this, size.x, size.y);
         setContentView(renderer);
 
         Init();

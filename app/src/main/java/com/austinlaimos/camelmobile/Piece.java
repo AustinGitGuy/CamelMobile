@@ -1,12 +1,60 @@
 package com.austinlaimos.camelmobile;
 
+import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Point;
 import android.graphics.Rect;
 
-public class Piece extends Object {
+public class Piece extends Object implements Cloneable{
 
-    //A piece has a rectangle (to display) and a color (to color code it)
+    //A piece has a rectangle (to display) and a Paint (to color code it)
     Rect rect;
     Paint paint;
+
+    public java.lang.Object clone() throws CloneNotSupportedException {
+        Piece piece = (Piece)super.clone();
+
+        return piece;
+    }
+
+    public Piece(){
+
+    }
+
+    public Piece(Piece piece){
+        point = new Point(piece.point);
+        rect = new Rect(piece.rect);
+        paint = new Paint(piece.paint);
+        rect.set(point.x - rect.width() / 2, point.y - rect.height() / 2, point.x + rect.width() / 2, point.y + rect.height() / 2);
+    }
+
+    public Piece(Rect rectangle, Point point, int color){
+        rect = rectangle;
+        paint = new Paint();
+        paint.setColor(color);
+        this.point = point;
+        rect.set(point.x - rect.width() / 2, point.y - rect.height() / 2, point.x + rect.width() / 2, point.y + rect.height() / 2);
+    }
+
+    @Override
+    public void draw(Canvas canvas){
+        canvas.drawRect(rect, paint);
+    }
+
+    @Override
+    public void update(){
+
+    }
+
+    @Override
+    public void onTap(int x, int y){
+
+    }
+
+    public void translate(int x, int y){
+        this.point.x = x;
+        this.point.y = y;
+        rect.set(point.x - rect.width() / 2, point.y - rect.height() / 2, point.x + rect.width() / 2, point.y + rect.height() / 2);
+    }
 
 }
