@@ -5,17 +5,11 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
 
-public class Piece extends Object implements Cloneable{
+public class Piece extends Object {
 
     //A piece has a rectangle (to display) and a Paint (to color code it)
     Rect rect;
     Paint paint;
-
-    public java.lang.Object clone() throws CloneNotSupportedException {
-        Piece piece = (Piece)super.clone();
-
-        return piece;
-    }
 
     public Piece(){
 
@@ -48,6 +42,10 @@ public class Piece extends Object implements Cloneable{
 
     @Override
     public void onTap(int x, int y){
+
+    }
+
+    public void onDrag(int x, int y){
 
     }
 

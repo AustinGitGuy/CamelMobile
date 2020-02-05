@@ -48,4 +48,11 @@ public class DisplayPiece extends Piece {
             }
         }
     }
+
+    @Override
+    public void onDrag(int x, int y){
+        if(rect.contains(x, y)){
+            translate(x, y);
+        }
+    }
 }
