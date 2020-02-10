@@ -5,24 +5,23 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
 
-public class Piece extends Object {
+public class Enemy extends Object{
 
-    //A pieces has a rectangle (to display) and a Paint (to color code it)
     Rect rect;
     Paint paint;
 
-    public Piece(){
+    public Enemy(){
 
     }
 
-    public Piece(Piece piece){
-        point = new Point(piece.point);
-        rect = new Rect(piece.rect);
-        paint = new Paint(piece.paint);
+    public Enemy(Enemy enemy){
+        point = new Point(enemy.point);
+        rect = new Rect(enemy.rect);
+        paint = new Paint(enemy.paint);
         rect.set(point.x - rect.width() / 2, point.y - rect.height() / 2, point.x + rect.width() / 2, point.y + rect.height() / 2);
     }
 
-    public Piece(Rect rectangle, Point point, int color){
+    public Enemy(Rect rectangle, Point point, int color){
         rect = rectangle;
         paint = new Paint();
         paint.setColor(color);
@@ -42,10 +41,6 @@ public class Piece extends Object {
 
     @Override
     public void onTap(int x, int y){
-
-    }
-
-    public void onDrag(int x, int y){
 
     }
 

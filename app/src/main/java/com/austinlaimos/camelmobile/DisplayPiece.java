@@ -36,10 +36,12 @@ public class DisplayPiece extends Piece {
                 tapped = false;
             }
             else {
-                Piece tmpPiece = new Piece(piece);
-                tmpPiece.translate(x, y);
-                Renderer.instance.piece.add(tmpPiece);
-                tapped = false;
+                if(Renderer.instance.getPlaceableArea(x, y)){
+                    Piece tmpPiece = new Piece(piece);
+                    tmpPiece.translate(x, y);
+                    Renderer.instance.pieces.add(tmpPiece);
+                    tapped = false;
+                }
             }
         }
         else {

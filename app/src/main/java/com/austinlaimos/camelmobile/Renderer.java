@@ -2,16 +2,12 @@ package com.austinlaimos.camelmobile;
 
 
 import android.annotation.SuppressLint;
-import android.content.ClipData;
-import android.content.ClipDescription;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.Build;
-import android.util.Log;
 import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -28,8 +24,10 @@ public class Renderer extends SurfaceView implements SurfaceHolder.Callback, Vie
 
     public static Renderer instance;
 
-    public List<Piece> piece;
-    public List<Piece> dispPiece;
+    public List<Piece> pieces;
+    public List<Piece> dispPieces;
+    public List<Tile> tiles;
+    public List<Enemy> enemies;
 
     List<UIObject> ui;
 
@@ -45,15 +43,32 @@ public class Renderer extends SurfaceView implements SurfaceHolder.Callback, Vie
 
         instance = this;
 
-        piece = new ArrayList<Piece>();
-        dispPiece = new ArrayList<Piece>();
-        ui = new ArrayList<UIObject>();
+        pieces = new ArrayList<>();
+        dispPieces = new ArrayList<>();
+        ui = new ArrayList<>();
+        tiles = new ArrayList<>();
+        enemies = new ArrayList<>();
 
         shadow = new DragShadowBuilder(this);
 
+        //Create the UI
         ui.add(new UIObject(new Rect(x - 150, 0, x, y), Color.rgb(100, 100, 100)));
-        piece.add(new Piece(new Rect(100, 100, 200, 200), new Point(-100, -100), Color.rgb(255, 0, 0)));
-        dispPiece.add(new DisplayPiece(piece.get(0), new Point(x - 75 , 75)));
+
+        //Add a dummy pieces offscreen
+        pieces.add(new Piece(new Rect(0, 0, 100, 100), new Point(-100, -100), Color.rgb(255, 0, 0)));
+
+        //Add the display pieces
+        dispPieces.add(new DisplayPiece(pieces.get(0), new Point(x - 75 , 75)));
+
+        //Create the level
+        tiles.add(new Tile(new Rect(0, 0, 150, y - 100), new Point(x - 400, (y - 100) / 2), Color.rgb(0, 0, 255)));
+
+        tiles.add(new Tile(new Rect(0, 0, 150, y - 100), new Point(x - 900, (y - 100) / 2), Color.rgb(0, 0, 255)));
+
+        tiles.add(new Tile(new Rect(0, 0, 350, 150), new Point(x - 650, y - 175), Color.rgb(0, 0, 255)));
+
+        //Add the dummy enemies offscreen
+        pieces.add(new Piece(new Rect(0, 0, 100, 100), new Point(-100, -100), Color.rgb(0, 255, 0)));
 
         setFocusable(true);
         setWillNotDraw(false);
@@ -63,8 +78,17 @@ public class Renderer extends SurfaceView implements SurfaceHolder.Callback, Vie
     }
 
     public void update(){
-        for(int i = 0; i < piece.size(); i++){
-            piece.get(i).update();
+        for(int i = 0; i < pieces.size(); i++){
+            pieces.get(i).update();
+        }
+        for(int i = 0; i < dispPieces.size(); i++){
+            dispPieces.get(i).update();
+        }
+        for(int i = 0; i < tiles.size(); i++){
+            tiles.get(i).update();
+        }
+        for(int i = 0; i < enemies.size(); i++){
+            enemies.get(i).update();
         }
     }
 
@@ -72,18 +96,26 @@ public class Renderer extends SurfaceView implements SurfaceHolder.Callback, Vie
     public void draw(Canvas canvas){
         super.draw(canvas);
 
-        canvas.drawColor(Color.GREEN);
+        canvas.drawColor(Color.WHITE);
 
         for(int i = 0; i < ui.size(); i++){
             canvas.drawRect(ui.get(i).getRect(), ui.get(i).getPaint());
         }
 
-        for(int i = 0; i < piece.size(); i++){
-            piece.get(i).draw(canvas);
+        for(int i = 0; i < pieces.size(); i++){
+            pieces.get(i).draw(canvas);
         }
 
-        for(int i = 0; i < dispPiece.size(); i++){
-            dispPiece.get(i).draw(canvas);
+        for(int i = 0; i < dispPieces.size(); i++){
+            dispPieces.get(i).draw(canvas);
+        }
+
+        for(int i = 0; i < tiles.size(); i++){
+            tiles.get(i).draw(canvas);
+        }
+
+        for(int i = 0; i < enemies.size(); i++){
+            enemies.get(i).draw(canvas);
         }
     }
 
@@ -102,16 +134,18 @@ public class Renderer extends SurfaceView implements SurfaceHolder.Callback, Vie
 
     }
 
-    public boolean getPlaceableArea(Point point){
-
+    public boolean getPlaceableArea(int x, int y){
+        for(int i = 0; i < tiles.size(); i++){
+            if(tiles.get(i).rect.contains(x, y)) return false;
+        }
         return true;
     }
 
     @Override
     public boolean onDrag(View v, DragEvent event){
         if(event.getAction() == DragEvent.ACTION_DRAG_ENTERED){
-            for(int i = 0; i < dispPiece.size(); i++){
-                dispPiece.get(i).onDrag((int)event.getX(), (int)event.getY());
+            for(int i = 0; i < dispPieces.size(); i++){
+                dispPieces.get(i).onDrag((int)event.getX(), (int)event.getY());
             }
         }
         return false;
@@ -120,17 +154,17 @@ public class Renderer extends SurfaceView implements SurfaceHolder.Callback, Vie
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public boolean onTouch(View v, MotionEvent event){
-        startDragAndDrop(null, shadow, v, 0);
+        //startDragAndDrop(null, shadow, v, 0);
 
         switch(event.getAction()){
             case(MotionEvent.ACTION_DOWN):
-                for(int i = 0; i < dispPiece.size(); i++){
-                    dispPiece.get(i).onTap((int) event.getX(), (int) event.getY());
+                for(int i = 0; i < dispPieces.size(); i++){
+                    dispPieces.get(i).onTap((int) event.getX(), (int) event.getY());
                 }
                 return true;
             case(MotionEvent.ACTION_MOVE):
-                for(int i = 0; i < dispPiece.size(); i++){
-                    dispPiece.get(i).onDrag((int) event.getX(), (int) event.getY());
+                for(int i = 0; i < dispPieces.size(); i++){
+                    dispPieces.get(i).onDrag((int) event.getX(), (int) event.getY());
                 }
                 return true;
         }

@@ -1,14 +1,14 @@
 Week 1 - Figure out what I want to do
-Week 2 - Scheduling and baseboard (Prototype 1)
+Week 2 - Scheduling and baseboard (Checkin 1)
 Week 3 - Start the app 
-Week 4 - Display pieces and pieces (Prototype 2)
+Week 4 - Display pieces and pieces (Checkin 2)
 Week 5 - Tiles and piece UI
-Week 6 - Enemies
+Week 6 - Enemies and piece shooting
 Week 7 - Win/loss state
 Week 8 - Scene loading
 Week 9 - Main menu
 Week 10 - Score system
-Week 11 - Fallback
+Week 11 - Buying pieces
 Week 12 - Fallback
 Week 13 - Fallback
 Week 14 - Final Presentation/Finished Game
