@@ -29,7 +29,7 @@ public class Renderer extends SurfaceView implements SurfaceHolder.Callback, Vie
     public List<Tile> tiles;
     public List<Enemy> enemies;
 
-    List<UIObject> ui;
+    List<UIObject> uiObjects;
 
     int width, height;
 
@@ -45,14 +45,17 @@ public class Renderer extends SurfaceView implements SurfaceHolder.Callback, Vie
 
         pieces = new ArrayList<>();
         dispPieces = new ArrayList<>();
-        ui = new ArrayList<>();
+        uiObjects = new ArrayList<>();
         tiles = new ArrayList<>();
         enemies = new ArrayList<>();
 
         shadow = new DragShadowBuilder(this);
 
         //Create the UI
-        ui.add(new UIObject(new Rect(x - 150, 0, x, y), Color.rgb(100, 100, 100)));
+        uiObjects.add(new UIObject(new Rect(x - 150, 0, x, y), Color.rgb(100, 100, 100)));
+
+        //Add the set button
+        uiObjects.add(new UIObject(new Rect(0, y - 250, 150, y), Color.rgb(0, 0, 0), "Set", Color.rgb(255, 255, 255), 100, 90, "AdvanceToEnemy"));
 
         //Add a dummy pieces offscreen
         pieces.add(new Piece(new Rect(0, 0, 100, 100), new Point(-100, -100), Color.rgb(255, 0, 0)));
@@ -61,11 +64,11 @@ public class Renderer extends SurfaceView implements SurfaceHolder.Callback, Vie
         dispPieces.add(new DisplayPiece(pieces.get(0), new Point(x - 75 , 75)));
 
         //Create the level
-        tiles.add(new Tile(new Rect(0, 0, 150, y - 100), new Point(x - 400, (y - 100) / 2), Color.rgb(0, 0, 255)));
+        tiles.add(new Tile(new Rect(0, 0, 150, y - 150), new Point(x - 350, (y - 150) / 2), Color.rgb(0, 0, 255)));
 
-        tiles.add(new Tile(new Rect(0, 0, 150, y - 100), new Point(x - 900, (y - 100) / 2), Color.rgb(0, 0, 255)));
+        tiles.add(new Tile(new Rect(0, 0, 150, y - 150), new Point(x - 850, (y - 150) / 2), Color.rgb(0, 0, 255)));
 
-        tiles.add(new Tile(new Rect(0, 0, 350, 150), new Point(x - 650, y - 175), Color.rgb(0, 0, 255)));
+        tiles.add(new Tile(new Rect(0, 0, 350, 150), new Point(x - 600, y - 225), Color.rgb(0, 0, 255)));
 
         //Add the dummy enemies offscreen
         pieces.add(new Piece(new Rect(0, 0, 100, 100), new Point(-100, -100), Color.rgb(0, 255, 0)));
@@ -98,10 +101,6 @@ public class Renderer extends SurfaceView implements SurfaceHolder.Callback, Vie
 
         canvas.drawColor(Color.WHITE);
 
-        for(int i = 0; i < ui.size(); i++){
-            canvas.drawRect(ui.get(i).getRect(), ui.get(i).getPaint());
-        }
-
         for(int i = 0; i < pieces.size(); i++){
             pieces.get(i).draw(canvas);
         }
@@ -116,6 +115,10 @@ public class Renderer extends SurfaceView implements SurfaceHolder.Callback, Vie
 
         for(int i = 0; i < enemies.size(); i++){
             enemies.get(i).draw(canvas);
+        }
+
+        for(int i = 0; i < uiObjects.size(); i++){
+            uiObjects.get(i).draw(canvas);
         }
     }
 
@@ -161,6 +164,9 @@ public class Renderer extends SurfaceView implements SurfaceHolder.Callback, Vie
                 for(int i = 0; i < dispPieces.size(); i++){
                     dispPieces.get(i).onTap((int) event.getX(), (int) event.getY());
                 }
+                for(int i = 0; i < uiObjects.size(); i++){
+                    uiObjects.get(i).onTap((int) event.getX(), (int) event.getY());
+                }
                 return true;
             case(MotionEvent.ACTION_MOVE):
                 for(int i = 0; i < dispPieces.size(); i++){
@@ -170,5 +176,9 @@ public class Renderer extends SurfaceView implements SurfaceHolder.Callback, Vie
         }
 
         return false;
+    }
+
+    public static void AdvanceToEnemy(){
+        instance.uiObjects.remove(1);
     }
 }

@@ -1,19 +1,69 @@
 package com.austinlaimos.camelmobile;
 
+import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 
-public class UIObject  {
-    Rect rect;
-    Paint paint;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
-    public UIObject(Rect rect, int color){
+public class UIObject  {
+
+    Rect rect;
+    Paint bgPaint;
+    Paint txtPaint;
+    float textSize;
+    String text;
+    int rotate;
+    String funcName;
+    Method method;
+
+    public UIObject(Rect rect, int bgColor){
         this.rect = rect;
-        this.paint = new Paint();
-        paint.setColor(color);
+        this.bgPaint = new Paint();
+        this.txtPaint = new Paint();
+        text = new String();
+        bgPaint.setColor(bgColor);
+
     }
 
-    public Rect getRect(){ return rect; }
+    public UIObject(Rect rect, int bgColor, String txt, int txtColor, float txtSize, int rotation, String funcName){
+        this.rect = rect;
+        this.bgPaint = new Paint();
+        bgPaint.setColor(bgColor);
+        this.txtPaint = new Paint();
+        this.text = txt;
+        this.textSize = txtSize;
+        this.rotate = rotation;
+        this.funcName = funcName;
+        txtPaint.setColor(txtColor);
+        txtPaint.setTextSize(txtSize);
+        txtPaint.setStyle(Paint.Style.FILL);
+    }
 
-    public Paint getPaint() { return paint; }
+    public void draw(Canvas canvas){
+        canvas.drawRect(rect, bgPaint);
+        canvas.save();
+        canvas.rotate(rotate, rect.left + rect.width() / 4, rect.top + rect.height() / 4);
+        canvas.drawText(text, rect.left + rect.width() / 4, rect.top + rect.height() / 4, txtPaint);
+        canvas.restore();
+    }
+
+    public void onTap(int x, int y){
+        if(rect.contains(x, y)){
+            Method[] methods = Renderer.class.getMethods();
+            for(Method m : methods){
+                if(funcName.equals(m.getName())){
+                    try {
+                        m.invoke(null);
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    } catch (InvocationTargetException e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                }
+            }
+        }
+    }
 }
