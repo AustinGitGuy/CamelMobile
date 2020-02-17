@@ -18,6 +18,8 @@ public class UIObject  {
     String funcName;
     Method method;
 
+    boolean methodCalls = false;
+
     public UIObject(Rect rect, int bgColor){
         this.rect = rect;
         this.bgPaint = new Paint();
@@ -39,6 +41,7 @@ public class UIObject  {
         txtPaint.setColor(txtColor);
         txtPaint.setTextSize(txtSize);
         txtPaint.setStyle(Paint.Style.FILL);
+        methodCalls = true;
     }
 
     public void draw(Canvas canvas){
@@ -51,17 +54,19 @@ public class UIObject  {
 
     public void onTap(int x, int y){
         if(rect.contains(x, y)){
-            Method[] methods = Renderer.class.getMethods();
-            for(Method m : methods){
-                if(funcName.equals(m.getName())){
-                    try {
-                        m.invoke(null);
-                    } catch (IllegalAccessException e) {
-                        e.printStackTrace();
-                    } catch (InvocationTargetException e) {
-                        e.printStackTrace();
+            if(methodCalls){
+                Method[] methods = Renderer.class.getMethods();
+                for(Method m : methods){
+                    if(funcName.equals(m.getName())){
+                        try {
+                            m.invoke(null);
+                        } catch (IllegalAccessException e) {
+                            e.printStackTrace();
+                        } catch (InvocationTargetException e) {
+                            e.printStackTrace();
+                        }
+                        break;
                     }
-                    break;
                 }
             }
         }

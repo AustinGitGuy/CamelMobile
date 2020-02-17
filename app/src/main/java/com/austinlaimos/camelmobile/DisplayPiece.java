@@ -25,7 +25,7 @@ public class DisplayPiece extends Piece {
     }
 
     @Override
-    public void update(){
+    public void update(long deltaTime){
 
     }
 

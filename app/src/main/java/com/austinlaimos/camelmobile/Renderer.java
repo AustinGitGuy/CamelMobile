@@ -35,13 +35,25 @@ public class Renderer extends SurfaceView implements SurfaceHolder.Callback, Vie
 
     DragShadowBuilder shadow;
 
+    boolean inGame = false;
+
+    long lastTime;
+
+    int enemiesLeft;
+
+    long enemyTimer;
+
     Renderer(Context context, int x, int y){
         super(context);
+
+        lastTime = System.nanoTime();
 
         width = x;
         height = y;
 
         instance = this;
+
+        enemyTimer = 0;
 
         pieces = new ArrayList<>();
         dispPieces = new ArrayList<>();
@@ -58,20 +70,20 @@ public class Renderer extends SurfaceView implements SurfaceHolder.Callback, Vie
         uiObjects.add(new UIObject(new Rect(0, y - 250, 150, y), Color.rgb(0, 0, 0), "Set", Color.rgb(255, 255, 255), 100, 90, "AdvanceToEnemy"));
 
         //Add a dummy pieces offscreen
-        pieces.add(new Piece(new Rect(0, 0, 100, 100), new Point(-100, -100), Color.rgb(255, 0, 0)));
+        pieces.add(new Piece(new Rect(0, 0, 100, 100), new Point(-100, -100), Color.rgb(255, 0, 0), 50));
 
         //Add the display pieces
         dispPieces.add(new DisplayPiece(pieces.get(0), new Point(x - 75 , 75)));
 
         //Create the level
-        tiles.add(new Tile(new Rect(0, 0, 150, y - 150), new Point(x - 350, (y - 150) / 2), Color.rgb(0, 0, 255)));
+        tiles.add(new Tile(new Rect(0, 0, 150, y - 150), new Point(x - 350, (y - 150) / 2), Color.rgb(0, 0, 255), Tile.Direction.down));
 
-        tiles.add(new Tile(new Rect(0, 0, 150, y - 150), new Point(x - 850, (y - 150) / 2), Color.rgb(0, 0, 255)));
+        tiles.add(new Tile(new Rect(0, 0, 500, 150), new Point(x - 675, y - 225), Color.rgb(0, 0, 255), Tile.Direction.left));
 
-        tiles.add(new Tile(new Rect(0, 0, 350, 150), new Point(x - 600, y - 225), Color.rgb(0, 0, 255)));
+        tiles.add(new Tile(new Rect(0, 0, 150, y - 300), new Point(x - 850, (y - 300) / 2), Color.rgb(0, 0, 255), Tile.Direction.up));
 
         //Add the dummy enemies offscreen
-        pieces.add(new Piece(new Rect(0, 0, 100, 100), new Point(-100, -100), Color.rgb(0, 255, 0)));
+        enemies.add(new Enemy(new Rect(0, 0, 100, 100), new Point(-100, -100), Color.rgb(0, 255, 0)));
 
         setFocusable(true);
         setWillNotDraw(false);
@@ -81,17 +93,37 @@ public class Renderer extends SurfaceView implements SurfaceHolder.Callback, Vie
     }
 
     public void update(){
+
+        long newTime = System.nanoTime();
+
+        long deltaTime = (newTime - lastTime) / 1000000;
+
+        lastTime = newTime;
+
+        enemyTimer += deltaTime;
+
+        if(enemiesLeft > 0){
+            if(enemyTimer >= 5000){
+                SpawnEnemy();
+                enemiesLeft--;
+                enemyTimer = 0;
+            }
+        }
+
         for(int i = 0; i < pieces.size(); i++){
-            pieces.get(i).update();
+            pieces.get(i).update(deltaTime);
         }
         for(int i = 0; i < dispPieces.size(); i++){
-            dispPieces.get(i).update();
+            dispPieces.get(i).update(deltaTime);
         }
         for(int i = 0; i < tiles.size(); i++){
-            tiles.get(i).update();
+            tiles.get(i).update(deltaTime);
         }
-        for(int i = 0; i < enemies.size(); i++){
-            enemies.get(i).update();
+        if(inGame){
+            //Dont update the first enemy (the dummy)
+            for(int i = 1; i < enemies.size(); i++){
+                enemies.get(i).update(deltaTime);
+            }
         }
     }
 
@@ -101,24 +133,25 @@ public class Renderer extends SurfaceView implements SurfaceHolder.Callback, Vie
 
         canvas.drawColor(Color.WHITE);
 
-        for(int i = 0; i < pieces.size(); i++){
-            pieces.get(i).draw(canvas);
-        }
-
-        for(int i = 0; i < dispPieces.size(); i++){
-            dispPieces.get(i).draw(canvas);
-        }
-
         for(int i = 0; i < tiles.size(); i++){
             tiles.get(i).draw(canvas);
         }
 
-        for(int i = 0; i < enemies.size(); i++){
+        for(int i = 0; i < pieces.size(); i++){
+            pieces.get(i).draw(canvas);
+        }
+
+        //Dont update the first enemy (the dummy)
+        for(int i = 1; i < enemies.size(); i++){
             enemies.get(i).draw(canvas);
         }
 
         for(int i = 0; i < uiObjects.size(); i++){
             uiObjects.get(i).draw(canvas);
+        }
+
+        for(int i = 0; i < dispPieces.size(); i++){
+            dispPieces.get(i).draw(canvas);
         }
     }
 
@@ -154,6 +187,28 @@ public class Renderer extends SurfaceView implements SurfaceHolder.Callback, Vie
         return false;
     }
 
+    public void SpawnEnemy(){
+        Enemy tmpPiece = new Enemy(enemies.get(0));
+        Tile tile = tiles.get(0);
+        if(tile.dir == Tile.Direction.down){
+            tmpPiece.translate(tile.rect.centerX(), tile.rect.top);
+            tmpPiece.speed = tile.rect.height() / 100;
+        }
+        else if(tile.dir == Tile.Direction.up){
+            tmpPiece.translate(tile.rect.centerX(), tile.rect.bottom);
+            tmpPiece.speed = tile.rect.height() / 100;
+        }
+        else if(tile.dir == Tile.Direction.left){
+            tmpPiece.translate(tile.rect.right, tile.rect.centerY());
+            tmpPiece.speed = tile.rect.width() / 100;
+        }
+        else if(tile.dir == Tile.Direction.right){
+            tmpPiece.translate(tile.rect.left, tile.rect.centerY());
+            tmpPiece.speed = tile.rect.width() / 100;
+        }
+        Renderer.instance.enemies.add(tmpPiece);
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public boolean onTouch(View v, MotionEvent event){
@@ -179,6 +234,9 @@ public class Renderer extends SurfaceView implements SurfaceHolder.Callback, Vie
     }
 
     public static void AdvanceToEnemy(){
+        instance.inGame = true;
+        instance.SpawnEnemy();
+        instance.enemiesLeft = 2;
         instance.uiObjects.remove(1);
     }
 }

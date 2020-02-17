@@ -12,7 +12,7 @@ public class Object {
 
     }
 
-    public void update(){
+    public void update(long deltaTime){
 
     }
 
