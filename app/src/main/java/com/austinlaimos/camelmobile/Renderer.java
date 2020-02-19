@@ -43,6 +43,14 @@ public class Renderer extends SurfaceView implements SurfaceHolder.Callback, Vie
 
     long enemyTimer;
 
+    int lives, curLevel = -1;
+
+    int[] levelLives;
+    int[] enemyNum;
+    int[] spawnTime;
+
+    final int LEVEL_NUM = 10;
+
     Renderer(Context context, int x, int y){
         super(context);
 
@@ -61,6 +69,19 @@ public class Renderer extends SurfaceView implements SurfaceHolder.Callback, Vie
         tiles = new ArrayList<>();
         enemies = new ArrayList<>();
 
+        enemyNum = new int[LEVEL_NUM];
+        levelLives = new int[LEVEL_NUM];
+        spawnTime = new int[LEVEL_NUM];
+
+        for(int i = 0; i < LEVEL_NUM; i++){
+            levelLives[i] = 5 * i + 5;
+            enemyNum[i] = 5 * i + 5;
+            spawnTime[i] = 5000 - (i * 300);
+            if(spawnTime[i] <= 100){
+                spawnTime[i] = 100;
+            }
+        }
+
         shadow = new DragShadowBuilder(this);
 
         //Create the UI
@@ -69,8 +90,10 @@ public class Renderer extends SurfaceView implements SurfaceHolder.Callback, Vie
         //Add the set button
         uiObjects.add(new UIObject(new Rect(0, y - 250, 150, y), Color.rgb(0, 0, 0), "Set", Color.rgb(255, 255, 255), 100, 90, "AdvanceToEnemy"));
 
+        uiObjects.add(new UIObject(new Rect(x - 150, y - 500, x, y), Color.rgb(100, 100, 100), "Lives: ", Color.rgb(255, 255, 255), 100, 90));
+
         //Add a dummy pieces offscreen
-        pieces.add(new Piece(new Rect(0, 0, 100, 100), new Point(-100, -100), Color.rgb(255, 0, 0), 50));
+        pieces.add(new Piece(new Rect(0, 0, 100, 100), new Point(-100, -100), Color.rgb(255, 0, 0), 175, .5f));
 
         //Add the display pieces
         dispPieces.add(new DisplayPiece(pieces.get(0), new Point(x - 75 , 75)));
@@ -83,7 +106,7 @@ public class Renderer extends SurfaceView implements SurfaceHolder.Callback, Vie
         tiles.add(new Tile(new Rect(0, 0, 150, y - 300), new Point(x - 850, (y - 300) / 2), Color.rgb(0, 0, 255), Tile.Direction.up));
 
         //Add the dummy enemies offscreen
-        enemies.add(new Enemy(new Rect(0, 0, 100, 100), new Point(-100, -100), Color.rgb(0, 255, 0)));
+        enemies.add(new Enemy(new Rect(0, 0, 100, 100), new Point(-100, -100), Color.rgb(0, 255, 0), 10));
 
         setFocusable(true);
         setWillNotDraw(false);
@@ -103,14 +126,14 @@ public class Renderer extends SurfaceView implements SurfaceHolder.Callback, Vie
         enemyTimer += deltaTime;
 
         if(enemiesLeft > 0){
-            if(enemyTimer >= 5000){
+            if(enemyTimer >= spawnTime[curLevel]){
                 SpawnEnemy();
                 enemiesLeft--;
                 enemyTimer = 0;
             }
         }
 
-        for(int i = 0; i < pieces.size(); i++){
+        for(int i = 1; i < pieces.size(); i++){
             pieces.get(i).update(deltaTime);
         }
         for(int i = 0; i < dispPieces.size(); i++){
@@ -123,6 +146,15 @@ public class Renderer extends SurfaceView implements SurfaceHolder.Callback, Vie
             //Dont update the first enemy (the dummy)
             for(int i = 1; i < enemies.size(); i++){
                 enemies.get(i).update(deltaTime);
+            }
+            if(enemies.size() == 1 && enemiesLeft <= 0){
+                inGame = false;
+                if(curLevel >= LEVEL_NUM - 1){
+                    //YOU WIN
+                }
+                else {
+                    uiObjects.add(new UIObject(new Rect(0, height - 250, 150, height), Color.rgb(0, 0, 0), "Set", Color.rgb(255, 255, 255), 100, 90, "AdvanceToEnemy"));
+                }
             }
         }
     }
@@ -137,7 +169,7 @@ public class Renderer extends SurfaceView implements SurfaceHolder.Callback, Vie
             tiles.get(i).draw(canvas);
         }
 
-        for(int i = 0; i < pieces.size(); i++){
+        for(int i = 1; i < pieces.size(); i++){
             pieces.get(i).draw(canvas);
         }
 
@@ -233,10 +265,23 @@ public class Renderer extends SurfaceView implements SurfaceHolder.Callback, Vie
         return false;
     }
 
+    public void enemyEnd(Enemy enemy){
+        enemies.remove(enemy);
+        lives--;
+        uiObjects.get(2).updateText((lives));
+        if(lives <= 0){
+            //YOU LOSE
+        }
+    }
+
     public static void AdvanceToEnemy(){
         instance.inGame = true;
         instance.SpawnEnemy();
-        instance.enemiesLeft = 2;
+        instance.curLevel++;
+        instance.enemiesLeft = instance.enemyNum[instance.curLevel] - 1;
+        instance.lives = instance.levelLives[instance.curLevel];
         instance.uiObjects.remove(1);
+        instance.uiObjects.get(2).updateText((instance.lives));
+        instance.enemyTimer = 0;
     }
 }

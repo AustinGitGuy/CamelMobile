@@ -44,12 +44,29 @@ public class UIObject  {
         methodCalls = true;
     }
 
+    public UIObject(Rect rect, int bgColor, String txt, int txtColor, float txtSize, int rotation){
+        this.rect = rect;
+        this.bgPaint = new Paint();
+        bgPaint.setColor(bgColor);
+        this.txtPaint = new Paint();
+        this.text = txt;
+        this.textSize = txtSize;
+        this.rotate = rotation;
+        txtPaint.setColor(txtColor);
+        txtPaint.setTextSize(txtSize);
+        txtPaint.setStyle(Paint.Style.FILL);
+    }
+
     public void draw(Canvas canvas){
         canvas.drawRect(rect, bgPaint);
         canvas.save();
         canvas.rotate(rotate, rect.left + rect.width() / 4, rect.top + rect.height() / 4);
         canvas.drawText(text, rect.left + rect.width() / 4, rect.top + rect.height() / 4, txtPaint);
         canvas.restore();
+    }
+
+    public void updateText(String newText){
+        text = newText;
     }
 
     public void onTap(int x, int y){

@@ -1,6 +1,7 @@
 package com.austinlaimos.camelmobile;
 
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
@@ -10,6 +11,12 @@ public class Enemy extends Object{
     Rect rect;
     Paint paint;
 
+    Rect healthRect;
+    Paint healthPaint;
+
+    Rect healthBarRect;
+    Paint healthBarPaint;
+
     float timer = 0;
 
     int tileIndex = 0;
@@ -17,28 +24,49 @@ public class Enemy extends Object{
     boolean finished = false;
     float speed = 1f;
 
-    public Enemy(){
+    float health;
 
-    }
+    float maxHealth;
 
     public Enemy(Enemy enemy){
         point = new Point(enemy.point);
         rect = new Rect(enemy.rect);
         paint = new Paint(enemy.paint);
         rect.set(point.x - rect.width() / 2, point.y - rect.height() / 2, point.x + rect.width() / 2, point.y + rect.height() / 2);
+        this.health = enemy.health;
+        this.speed = enemy.speed;
+        this.health = enemy.health;
+        this.healthRect = new Rect(enemy.rect);
+        this.healthPaint = new Paint(enemy.healthPaint);
+        this.healthBarRect = new Rect(enemy.healthBarRect);
+        this.healthBarPaint = new Paint(enemy.healthBarPaint);
+        this.maxHealth = enemy.maxHealth;
     }
 
-    public Enemy(Rect rectangle, Point point, int color){
+    public Enemy(Rect rectangle, Point point, int color, float health){
         rect = rectangle;
         paint = new Paint();
         paint.setColor(color);
         this.point = point;
         rect.set(point.x - rect.width() / 2, point.y - rect.height() / 2, point.x + rect.width() / 2, point.y + rect.height() / 2);
+        this.health = health;
+        healthPaint = new Paint();
+        healthPaint.setColor(Color.rgb(255, 0, 0));
+        healthBarPaint = new Paint();
+        healthBarPaint.setColor(Color.rgb(0, 0, 0));
+        healthRect = new Rect();
+        healthBarRect = new Rect();
+        maxHealth = health;
+
+        healthRect.set(point.x + rect.width() + 10, point.y - rect.height() / 2, (int)(point.x + rect.width() / 1.5f) + 10, point.y + rect.height() / 2);
+        healthBarRect.set(point.x + rect.width() + 10, point.y - rect.height() / 2, (int)(point.x + rect.width() / 1.5f) + 10, point.y + rect.height() / 2);
     }
 
     @Override
     public void draw(Canvas canvas){
         canvas.drawRect(rect, paint);
+        canvas.drawRect(healthBarRect, healthBarPaint);
+        canvas.drawRect(healthRect, healthPaint);
     }
 
     @Override
@@ -71,6 +99,7 @@ public class Enemy extends Object{
                 if(tileIndex >= Renderer.instance.tiles.size()){
                     //The enemy made it to the end
                     finished = true;
+                    Renderer.instance.enemyEnd(this);
                     return;
                 }
 
@@ -101,10 +130,20 @@ public class Enemy extends Object{
 
     }
 
+    public void tickDamage(float damage){
+        health -= damage;
+        healthRect.set(point.x - rect.width() / 2, point.y - rect.height() - 10, (int)(point.x + rect.width() / 1.5f) + 10, (point.y + rect.height() / 2) - (int)((1 - health / maxHealth) * rect.height()));
+        if(health <= 0){
+            Renderer.instance.enemies.remove(this);
+        }
+    }
+
     public void translate(int x, int y){
         this.point.x = x;
         this.point.y = y;
         rect.set(point.x - rect.width() / 2, point.y - rect.height() / 2, point.x + rect.width() / 2, point.y + rect.height() / 2);
+        healthRect.set(point.x + rect.width() + 10, point.y - rect.height() / 2, (int)(point.x + rect.width() / 1.5f) + 10, (point.y + rect.height() / 2) - (int)((1 - health / maxHealth) * rect.height()));
+        healthBarRect.set(point.x + rect.width() + 10, point.y - rect.height() / 2, (int)(point.x + rect.width() / 1.5f) + 10, point.y + rect.height() / 2);
     }
 
     public float lerp(float a, float b, float time){
