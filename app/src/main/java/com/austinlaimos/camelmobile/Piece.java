@@ -4,12 +4,11 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
-import android.graphics.Rect;
 
 public class Piece extends Object {
 
-    //A pieces has a rectangle (to display) and a Paint (to color code it)
-    Rect rect;
+    //A piece has a radius (to display the circle) and a Paint (to color code it)
+    float radius;
     Paint paint;
     Paint attackPaint;
 
@@ -29,21 +28,19 @@ public class Piece extends Object {
 
     public Piece(Piece piece){
         point = new Point(piece.point);
-        rect = new Rect(piece.rect);
+        radius = piece.radius;
         paint = new Paint(piece.paint);
-        rect.set(point.x - rect.width() / 2, point.y - rect.height() / 2, point.x + rect.width() / 2, point.y + rect.height() / 2);
         this.range = piece.range;
         attackPaint = new Paint(piece.attackPaint);
         linePaint = new Paint(piece.linePaint);
         this.damage = piece.damage;
     }
 
-    public Piece(Rect rectangle, Point point, int color, int range, float damage){
-        rect = rectangle;
+    public Piece(float radius, Point point, int color, int range, float damage){
+        this.radius = radius;
         paint = new Paint();
         paint.setColor(color);
         this.point = point;
-        rect.set(point.x - rect.width() / 2, point.y - rect.height() / 2, point.x + rect.width() / 2, point.y + rect.height() / 2);
         this.range = range;
         attackPaint = new Paint();
         attackPaint.setColor(Color.rgb(50, 50, 50));
@@ -57,18 +54,18 @@ public class Piece extends Object {
     public void draw(Canvas canvas){
 
         if(attacking){
-            canvas.drawRect(rect, attackPaint);
+            canvas.drawCircle(point.x, point.y, radius, attackPaint);
             canvas.drawLine(point.x, point.y, attackPoint.x, attackPoint.y, linePaint);
         }
         else {
-            canvas.drawRect(rect, paint);
+            canvas.drawCircle(point.x, point.y, radius, paint);
         }
     }
 
     @Override
     public void update(long deltaTime){
-        for(int i = 1; i < Renderer.instance.enemies.size(); i++){
-            Enemy enemy = Renderer.instance.enemies.get(i);
+        for(int i = 0; i < ((LevelScene)Renderer.instance.getCurScene()).enemies.size(); i++){
+            Enemy enemy = ((LevelScene)Renderer.instance.getCurScene()).enemies.get(i);
             double dist = getDistance(point, enemy.point);
             if(dist <= range){
                 attackPoint = enemy.point;
@@ -92,7 +89,6 @@ public class Piece extends Object {
     public void translate(int x, int y){
         this.point.x = x;
         this.point.y = y;
-        rect.set(point.x - rect.width() / 2, point.y - rect.height() / 2, point.x + rect.width() / 2, point.y + rect.height() / 2);
     }
 
     double getDistance(Point a, Point b){

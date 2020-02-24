@@ -3,7 +3,6 @@ package com.austinlaimos.camelmobile;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Point;
-import android.graphics.Rect;
 
 public class DisplayPiece extends Piece {
 
@@ -14,14 +13,13 @@ public class DisplayPiece extends Piece {
     public DisplayPiece(Piece piece, Point point){
         this.piece = piece;
         this.point = point;
-        this.rect = new Rect(this.piece.rect.left, this.piece.rect.top, this.piece.rect.right, this.piece.rect.bottom);
+        this.radius = piece.radius;
         this.paint = new Paint(this.piece.paint);
-        rect.set(point.x - rect.width() / 2, point.y - rect.height() / 2, point.x + rect.width() / 2, point.y + rect.height() / 2);
     }
 
     @Override
     public void draw(Canvas canvas){
-        canvas.drawRect(rect, paint);
+        canvas.drawCircle(point.x, point.y, radius, paint);
     }
 
     @Override
@@ -32,20 +30,20 @@ public class DisplayPiece extends Piece {
     @Override
     public void onTap(int x, int y){
         if(tapped){
-            if(rect.contains(x, y)){
+            if(getDistance(point, new Point(x, y)) <= radius){
                 tapped = false;
             }
             else {
-                if(Renderer.instance.getPlaceableArea(x, y)){
+                if(((LevelScene)Renderer.instance.getCurScene()).getPlaceableArea(x, y)){
                     Piece tmpPiece = new Piece(piece);
                     tmpPiece.translate(x, y);
-                    Renderer.instance.pieces.add(tmpPiece);
+                    ((LevelScene)Renderer.instance.getCurScene()).pieces.add(tmpPiece);
                     tapped = false;
                 }
             }
         }
         else {
-            if(rect.contains(x, y)){
+            if(getDistance(point, new Point(x, y)) <= radius){
                 tapped = true;
             }
         }
@@ -53,8 +51,12 @@ public class DisplayPiece extends Piece {
 
     @Override
     public void onDrag(int x, int y){
-        if(rect.contains(x, y)){
+        if(getDistance(point, new Point(x, y)) <= radius){
             translate(x, y);
         }
+    }
+
+    double getDistance(Point a, Point b){
+        return Math.sqrt((b.x - a.x) * (b.x - a.x) + (b.y - a.y) * (b.y - a.y));
     }
 }

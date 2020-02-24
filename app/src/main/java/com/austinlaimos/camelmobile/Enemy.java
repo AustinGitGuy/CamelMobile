@@ -6,7 +6,7 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
 
-public class Enemy extends Object{
+public class Enemy extends Object {
 
     Rect rect;
     Paint paint;
@@ -74,7 +74,7 @@ public class Enemy extends Object{
         if(!finished){
             //Advance on the tiles
 
-            Tile tile = Renderer.instance.tiles.get(tileIndex);
+            Tile tile = ((LevelScene)Renderer.instance.getCurScene()).tiles.get(tileIndex);
 
             if(tile.dir == Tile.Direction.down){
                 translate(point.x, (int)lerp(tile.rect.top, tile.rect.bottom - tile.rect.width() / 2, timer / (1000 * speed)));
@@ -96,14 +96,14 @@ public class Enemy extends Object{
                 tileIndex++;
                 timer = 0;
 
-                if(tileIndex >= Renderer.instance.tiles.size()){
+                if(tileIndex >= ((LevelScene)Renderer.instance.getCurScene()).tiles.size()){
                     //The enemy made it to the end
                     finished = true;
-                    Renderer.instance.enemyEnd(this);
+                    ((LevelScene)Renderer.instance.getCurScene()).enemyEnd(this);
                     return;
                 }
 
-                tile = Renderer.instance.tiles.get(tileIndex);
+                tile = ((LevelScene)Renderer.instance.getCurScene()).tiles.get(tileIndex);
 
                 if(tile.dir == Tile.Direction.down){
                     translate(tile.rect.centerX(), tile.rect.top);
@@ -134,7 +134,7 @@ public class Enemy extends Object{
         health -= damage;
         healthRect.set(point.x - rect.width() / 2, point.y - rect.height() - 10, (int)(point.x + rect.width() / 1.5f) + 10, (point.y + rect.height() / 2) - (int)((1 - health / maxHealth) * rect.height()));
         if(health <= 0){
-            Renderer.instance.enemies.remove(this);
+            ((LevelScene)Renderer.instance.getCurScene()).enemies.remove(this);
         }
     }
 
