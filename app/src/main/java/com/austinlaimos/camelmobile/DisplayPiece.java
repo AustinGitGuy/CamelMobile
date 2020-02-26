@@ -34,10 +34,10 @@ public class DisplayPiece extends Piece {
                 tapped = false;
             }
             else {
-                if(((LevelScene)Renderer.instance.getCurScene()).getPlaceableArea(x, y)){
+                if(((LevelScene) Game.instance.getCurScene()).getPlaceableArea(x, y)){
                     Piece tmpPiece = new Piece(piece);
                     tmpPiece.translate(x, y);
-                    ((LevelScene)Renderer.instance.getCurScene()).pieces.add(tmpPiece);
+                    ((LevelScene) Game.instance.getCurScene()).pieces.add(tmpPiece);
                     tapped = false;
                 }
             }

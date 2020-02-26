@@ -28,6 +28,8 @@ public class Enemy extends Object {
 
     float maxHealth;
 
+    int enemyIndex;
+
     public Enemy(Enemy enemy){
         point = new Point(enemy.point);
         rect = new Rect(enemy.rect);
@@ -41,9 +43,10 @@ public class Enemy extends Object {
         this.healthBarRect = new Rect(enemy.healthBarRect);
         this.healthBarPaint = new Paint(enemy.healthBarPaint);
         this.maxHealth = enemy.maxHealth;
+        this.enemyIndex = enemy.enemyIndex;
     }
 
-    public Enemy(Rect rectangle, Point point, int color, float health){
+    public Enemy(Rect rectangle, Point point, int color, float health, int enemyIndex){
         rect = rectangle;
         paint = new Paint();
         paint.setColor(color);
@@ -57,6 +60,8 @@ public class Enemy extends Object {
         healthRect = new Rect();
         healthBarRect = new Rect();
         maxHealth = health;
+
+        this.enemyIndex = enemyIndex;
 
         healthRect.set(point.x + rect.width() + 10, point.y - rect.height() / 2, (int)(point.x + rect.width() / 1.5f) + 10, point.y + rect.height() / 2);
         healthBarRect.set(point.x + rect.width() + 10, point.y - rect.height() / 2, (int)(point.x + rect.width() / 1.5f) + 10, point.y + rect.height() / 2);
@@ -73,8 +78,7 @@ public class Enemy extends Object {
     public void update(long deltaTime){
         if(!finished){
             //Advance on the tiles
-
-            Tile tile = ((LevelScene)Renderer.instance.getCurScene()).tiles.get(tileIndex);
+            Tile tile = ((LevelScene) Game.instance.getCurScene()).tiles.get(tileIndex);
 
             if(tile.dir == Tile.Direction.down){
                 translate(point.x, (int)lerp(tile.rect.top, tile.rect.bottom - tile.rect.width() / 2, timer / (1000 * speed)));
@@ -96,14 +100,14 @@ public class Enemy extends Object {
                 tileIndex++;
                 timer = 0;
 
-                if(tileIndex >= ((LevelScene)Renderer.instance.getCurScene()).tiles.size()){
+                if(tileIndex >= ((LevelScene) Game.instance.getCurScene()).tiles.size()){
                     //The enemy made it to the end
                     finished = true;
-                    ((LevelScene)Renderer.instance.getCurScene()).enemyEnd(this);
+                    ((LevelScene) Game.instance.getCurScene()).enemyEnd(this);
                     return;
                 }
 
-                tile = ((LevelScene)Renderer.instance.getCurScene()).tiles.get(tileIndex);
+                tile = ((LevelScene) Game.instance.getCurScene()).tiles.get(tileIndex);
 
                 if(tile.dir == Tile.Direction.down){
                     translate(tile.rect.centerX(), tile.rect.top);
@@ -134,7 +138,10 @@ public class Enemy extends Object {
         health -= damage;
         healthRect.set(point.x - rect.width() / 2, point.y - rect.height() - 10, (int)(point.x + rect.width() / 1.5f) + 10, (point.y + rect.height() / 2) - (int)((1 - health / maxHealth) * rect.height()));
         if(health <= 0){
-            ((LevelScene)Renderer.instance.getCurScene()).enemies.remove(this);
+            ((LevelScene) Game.instance.getCurScene()).enemies.remove(this);
+            if(enemyIndex > 0){
+                ((LevelScene) Game.instance.getCurScene()).SpawnEnemy(enemyIndex - 1, tileIndex, timer, point);
+            }
         }
     }
 

@@ -18,12 +18,11 @@ import androidx.annotation.RequiresApi;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 
 @SuppressLint("AppCompatCustomView")
-public class Renderer extends SurfaceView implements SurfaceHolder.Callback, View.OnDragListener, View.OnTouchListener {
+public class Game extends SurfaceView implements SurfaceHolder.Callback, View.OnDragListener, View.OnTouchListener {
 
-    public static Renderer instance;
+    public static Game instance;
 
     long lastTime;
     int width, height;
@@ -35,7 +34,7 @@ public class Renderer extends SurfaceView implements SurfaceHolder.Callback, Vie
 
     int curScene = 0;
 
-    Renderer(Context context, int x, int y){
+    Game(Context context, int x, int y){
         super(context);
 
         lastTime = System.nanoTime();
@@ -45,9 +44,17 @@ public class Renderer extends SurfaceView implements SurfaceHolder.Callback, Vie
 
         instance = this;
 
-        scenes = new ArrayList<>();
         enemyTemplates = new ArrayList<>();
         pieceTemplates = new ArrayList<>();
+
+        enemyTemplates.add(new Enemy(new Rect(0, 0, 100, 100), new Point(-100, -100), Color.rgb(0, 255, 0), 10, 0));
+        enemyTemplates.add(new Enemy(new Rect(0, 0, 100, 100), new Point(-100, -100), Color.rgb(255, 255, 0), 15, 1));
+
+        pieceTemplates.add(new Piece(50, new Point(-100, -100), Color.rgb(255, 0, 0), 175, .125f));
+
+        scenes = new ArrayList<>();
+        scenes.add(new TitleScene(x, y));
+        scenes.add(new OptionsScene(x, y));
         scenes.add(new LevelScene(x, y));
 
         setFocusable(true);
@@ -55,11 +62,6 @@ public class Renderer extends SurfaceView implements SurfaceHolder.Callback, Vie
 
         setOnTouchListener(this);
         setOnDragListener(this);
-
-        enemyTemplates.add(new Enemy(new Rect(0, 0, 100, 100), new Point(-100, -100), Color.rgb(0, 255, 0), 10));
-        enemyTemplates.add(new Enemy(new Rect(0, 0, 100, 100), new Point(-100, -100), Color.rgb(255, 255, 0), 15));
-
-        pieceTemplates.add(new Piece(50, new Point(-100, -100), Color.rgb(255, 0, 0), 175, .125f));
     }
 
     public Scene getCurScene(){
@@ -113,5 +115,22 @@ public class Renderer extends SurfaceView implements SurfaceHolder.Callback, Vie
 
     public static void AdvanceToEnemy(){
         ((LevelScene)instance.scenes.get(instance.curScene)).AdvanceToEnemy();
+    }
+
+    public static void ToGame(){
+        instance.curScene = 2;
+    }
+
+    public static void ToOptions(){
+        instance.curScene = 1;
+        ((OptionsScene)instance.scenes.get(1)).resetOptions();
+    }
+
+    public static void ToTitle(){
+        instance.curScene = 0;
+    }
+
+    public static void EnemyColors(){
+        ((OptionsScene)instance.scenes.get(1)).toEnemyColors();
     }
 }

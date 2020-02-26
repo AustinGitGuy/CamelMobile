@@ -14,13 +14,15 @@ public class Piece extends Object {
 
     Paint linePaint;
 
+    Paint hollowPaint;
+
     Point attackPoint;
 
     int range;
 
     float damage;
 
-    boolean attacking = false;
+    boolean attacking = false, tapped;
 
     public Piece(){
 
@@ -32,6 +34,7 @@ public class Piece extends Object {
         paint = new Paint(piece.paint);
         this.range = piece.range;
         attackPaint = new Paint(piece.attackPaint);
+        hollowPaint = new Paint(piece.hollowPaint);
         linePaint = new Paint(piece.linePaint);
         this.damage = piece.damage;
     }
@@ -47,12 +50,15 @@ public class Piece extends Object {
         linePaint = new Paint();
         linePaint.setColor(paint.getColor());
         linePaint.setStrokeWidth(10);
+        hollowPaint = new Paint();
+        hollowPaint.setColor(paint.getColor());
+        hollowPaint.setStyle(Paint.Style.STROKE);
+        hollowPaint.setStrokeWidth(5);
         this.damage = damage;
     }
 
     @Override
     public void draw(Canvas canvas){
-
         if(attacking){
             canvas.drawCircle(point.x, point.y, radius, attackPaint);
             canvas.drawLine(point.x, point.y, attackPoint.x, attackPoint.y, linePaint);
@@ -60,12 +66,16 @@ public class Piece extends Object {
         else {
             canvas.drawCircle(point.x, point.y, radius, paint);
         }
+
+        if(tapped){
+            canvas.drawCircle(point.x, point.y, range, hollowPaint);
+        }
     }
 
     @Override
     public void update(long deltaTime){
-        for(int i = 0; i < ((LevelScene)Renderer.instance.getCurScene()).enemies.size(); i++){
-            Enemy enemy = ((LevelScene)Renderer.instance.getCurScene()).enemies.get(i);
+        for(int i = 0; i < ((LevelScene) Game.instance.getCurScene()).enemies.size(); i++){
+            Enemy enemy = ((LevelScene) Game.instance.getCurScene()).enemies.get(i);
             double dist = getDistance(point, enemy.point);
             if(dist <= range){
                 attackPoint = enemy.point;
@@ -79,7 +89,17 @@ public class Piece extends Object {
 
     @Override
     public void onTap(int x, int y){
+        if(tapped){
+            if(getDistance(point, new Point(x, y)) <= radius){
 
+            }
+            tapped = false;
+        }
+        else {
+            if(getDistance(point, new Point(x, y)) <= radius){
+                tapped = !tapped;
+            }
+        }
     }
 
     public void onDrag(int x, int y){

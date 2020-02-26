@@ -6,7 +6,7 @@ import android.graphics.Point;
 public class Object {
 
     //An object just has a point in space
-    public Point point;
+    protected Point point;
 
     public void draw(Canvas canvas){
 
@@ -22,5 +22,9 @@ public class Object {
 
     public void translate(int x, int y){
 
+    }
+
+    public Point getPoint(){
+        return point;
     }
 }

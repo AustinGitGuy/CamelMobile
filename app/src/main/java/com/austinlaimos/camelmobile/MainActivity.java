@@ -8,12 +8,16 @@ import android.view.*;
 
 public class MainActivity extends AppCompatActivity {
 
-    Renderer renderer;
+    Game game;
     Looper updateLooper;
+
+    public static MainActivity instance;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
+
+        instance = this;
 
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -22,8 +26,8 @@ public class MainActivity extends AppCompatActivity {
 
         getWindowManager().getDefaultDisplay().getSize(size);
 
-        renderer = new Renderer(this, size.x, size.y);
-        setContentView(renderer);
+        game = new Game(this, size.x, size.y);
+        setContentView(game);
 
         Init();
     }
@@ -31,8 +35,8 @@ public class MainActivity extends AppCompatActivity {
     Runnable updateLoop = new Runnable(){
         @Override
         public void run(){
-            renderer.update();
-            setContentView(renderer);
+            game.update();
+            setContentView(game);
         }
     };
 

@@ -20,6 +20,8 @@ public class UIObject  {
 
     boolean methodCalls = false;
 
+    boolean visible = true;
+
     public UIObject(Rect rect, int bgColor){
         this.rect = rect;
         this.bgPaint = new Paint();
@@ -58,6 +60,7 @@ public class UIObject  {
     }
 
     public void draw(Canvas canvas){
+        if(!visible) return;
         canvas.drawRect(rect, bgPaint);
         canvas.save();
         canvas.rotate(rotate, rect.left + rect.width() / 4, rect.top + rect.height() / 4);
@@ -70,9 +73,10 @@ public class UIObject  {
     }
 
     public void onTap(int x, int y){
+        if(!visible) return;
         if(rect.contains(x, y)){
             if(methodCalls){
-                Method[] methods = Renderer.class.getMethods();
+                Method[] methods = Game.class.getMethods();
                 for(Method m : methods){
                     if(funcName.equals(m.getName())){
                         try {

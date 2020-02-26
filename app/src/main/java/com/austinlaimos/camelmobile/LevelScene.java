@@ -34,7 +34,7 @@ public class LevelScene extends Scene {
     ArrayList[] enemyNum;
     int[] spawnTime;
 
-    final int LEVEL_NUM = 10;
+    final int LEVEL_NUM = 5;
 
     public LevelScene(int x, int y){
         width = x;
@@ -57,23 +57,21 @@ public class LevelScene extends Scene {
             enemyNum[i] = new ArrayList<>();
 
             for(int c = 0; c < 5 * i + 5; c++){
-                if(i % 2 == 0 && i != 0){
+                if(i == 2 || i == 3){
                     enemyNum[i].add(1);
+                }
+                else if(i == 4){
+                    enemyNum[i].add(c % 2);
                 }
                 else {
                     enemyNum[i].add(0);
                 }
             }
 
-            if(i % 2 == 0){
+            if(i == 0 || i == 2){
                 spawnTime[i] = 3000;
             }
             else spawnTime[i] = 1500;
-
-            spawnTime[i] = 3000 - (i * 1000);
-            if(spawnTime[i] <= 1000){
-                spawnTime[i] = 1000;
-            }
         }
 
         //Create the UI
@@ -84,7 +82,7 @@ public class LevelScene extends Scene {
         uiObjects.add(new UIObject(new Rect(x - 150, y - 600, x, y), Color.rgb(100, 100, 100), "Lives: ", Color.rgb(255, 255, 255), 100, 90));
 
         //Add the display pieces
-        dispPieces.add(new DisplayPiece(Renderer.instance.pieceTemplates.get(0), new Point(x - 75 , 75)));
+        dispPieces.add(new DisplayPiece(Game.instance.pieceTemplates.get(0), new Point(x - 75 , 75)));
 
         //Create the level
         tiles.add(new Tile(new Rect(0, 0, 150, y - 150), new Point(x - 350, (y - 150) / 2), Color.rgb(0, 0, 255), Tile.Direction.down));
@@ -129,7 +127,7 @@ public class LevelScene extends Scene {
     }
 
     public void SpawnEnemy(){
-        Enemy tmpPiece = new Enemy(Renderer.instance.enemyTemplates.get((int)enemyNum[curLevel].get(enemyCount)));
+        Enemy tmpPiece = new Enemy(Game.instance.enemyTemplates.get((int)enemyNum[curLevel].get(enemyCount)));
         Tile tile = tiles.get(0);
         if(tile.dir == Tile.Direction.down){
             tmpPiece.translate(tile.rect.centerX(), tile.rect.top);
@@ -147,9 +145,33 @@ public class LevelScene extends Scene {
             tmpPiece.translate(tile.rect.left, tile.rect.centerY());
             tmpPiece.speed = tile.rect.width() / 100;
         }
-        ((LevelScene)Renderer.instance.scenes.get(Renderer.instance.curScene)).enemies.add(tmpPiece);
+        ((LevelScene) Game.instance.scenes.get(Game.instance.curScene)).enemies.add(tmpPiece);
         enemiesLeft--;
         enemyCount++;
+    }
+
+    public void SpawnEnemy(int number, int tileIndex, float timer, Point point){
+        Enemy tmpPiece = new Enemy(Game.instance.enemyTemplates.get(number));
+        Tile tile = tiles.get(tileIndex);
+        if(tile.dir == Tile.Direction.down){
+            tmpPiece.translate(tile.rect.centerX(), tile.rect.top);
+            tmpPiece.speed = tile.rect.height() / 100;
+        }
+        else if(tile.dir == Tile.Direction.up){
+            tmpPiece.translate(tile.rect.centerX(), tile.rect.bottom);
+            tmpPiece.speed = tile.rect.height() / 100;
+        }
+        else if(tile.dir == Tile.Direction.left){
+            tmpPiece.translate(tile.rect.right, tile.rect.centerY());
+            tmpPiece.speed = tile.rect.width() / 100;
+        }
+        else if(tile.dir == Tile.Direction.right){
+            tmpPiece.translate(tile.rect.left, tile.rect.centerY());
+            tmpPiece.speed = tile.rect.width() / 100;
+        }
+        tmpPiece.timer = timer;
+        tmpPiece.translate(point.x, point.y);
+        ((LevelScene) Game.instance.scenes.get(Game.instance.curScene)).enemies.add(tmpPiece);
     }
 
     @Override
@@ -160,16 +182,16 @@ public class LevelScene extends Scene {
             tiles.get(i).draw(canvas);
         }
 
-        for(int i = 0; i < pieces.size(); i++){
-            pieces.get(i).draw(canvas);
-        }
-
         for(int i = 0; i < enemies.size(); i++){
             enemies.get(i).draw(canvas);
         }
 
         for(int i = 0; i < uiObjects.size(); i++){
             uiObjects.get(i).draw(canvas);
+        }
+
+        for(int i = 0; i < pieces.size(); i++){
+            pieces.get(i).draw(canvas);
         }
 
         for(int i = 0; i < dispPieces.size(); i++){
@@ -212,6 +234,9 @@ public class LevelScene extends Scene {
                 }
                 for(int i = 0; i < uiObjects.size(); i++){
                     uiObjects.get(i).onTap((int) event.getX(), (int) event.getY());
+                }
+                for(int i = 0; i < pieces.size(); i++){
+                    pieces.get(i).onTap((int) event.getX(), (int) event.getY());
                 }
                 return true;
             case(MotionEvent.ACTION_MOVE):
