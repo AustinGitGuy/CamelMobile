@@ -10,23 +10,26 @@ import android.view.View;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TitleScene extends Scene {
-
+public class LevelSelectScene extends Scene {
     List<UIObject> uiObjects;
 
     int width, height;
 
-    public TitleScene(int x, int y){
+    public LevelSelectScene(int x, int y){
         width = x;
         height = y;
         uiObjects = new ArrayList<>();
-        uiObjects.add(new UIObject(new Rect(x - 300, 100, x - 150, y - 100), Color.rgb(100, 100, 100), "Level Select", Color.rgb(255, 255, 255), 100, 90, "ToLevelSelect"));
-        uiObjects.add(new UIObject(new Rect(x - 600, 100, x - 450, y - 100), Color.rgb(100, 100, 100), "Options Menu", Color.rgb(255, 255, 255), 100, 90, "ToOptions"));
+        uiObjects.add(new UIObject(new Rect(x - 300, 100, x - 150, y - 100), Color.rgb(100, 100, 100), "Back to Title", Color.rgb(255, 255, 255), 100, 90, "ToTitle"));
+        uiObjects.add(new UIObject(new Rect(x - 600, 100, x - 450, y - 100), Color.rgb(100, 100, 100), "Enemy Colors", Color.rgb(255, 255, 255), 100, 90, "SceneOne"));
     }
 
     @Override
     public void update(long deltaTime){
+        //MainActivity.instance.addContentView(seekBars.get(0), null);
+    }
 
+    public void resetOptions(){
+        uiObjects.get(1).visible = true;
     }
 
     @Override
@@ -53,5 +56,9 @@ public class TitleScene extends Scene {
     @Override
     public boolean onDrag(View v, DragEvent event){
         return false;
+    }
+
+    public void toSceneOne(){
+
     }
 }

@@ -17,7 +17,7 @@ public class LevelScene extends Scene {
     public List<Tile> tiles;
     public List<Enemy> enemies;
 
-    List<UIObject> uiObjects;
+    public List<UIObject> uiObjects;
 
     int width, height;
 
@@ -30,9 +30,9 @@ public class LevelScene extends Scene {
 
     int lives, curLevel = -1;
 
-    int[] levelLives;
-    ArrayList[] enemyNum;
-    int[] spawnTime;
+    public int[] levelLives;
+    public ArrayList[] enemyNum;
+    public int[] spawnTime;
 
     final int LEVEL_NUM = 5;
 
@@ -41,53 +41,6 @@ public class LevelScene extends Scene {
         height = y;
 
         enemyTimer = 0;
-
-        pieces = new ArrayList<>();
-        dispPieces = new ArrayList<>();
-        uiObjects = new ArrayList<>();
-        tiles = new ArrayList<>();
-        enemies = new ArrayList<>();
-
-        enemyNum = new ArrayList[LEVEL_NUM];
-        levelLives = new int[LEVEL_NUM];
-        spawnTime = new int[LEVEL_NUM];
-
-        for(int i = 0; i < LEVEL_NUM; i++){
-            levelLives[i] = 3;
-            enemyNum[i] = new ArrayList<>();
-
-            for(int c = 0; c < 5 * i + 5; c++){
-                if(i == 2 || i == 3){
-                    enemyNum[i].add(1);
-                }
-                else if(i == 4){
-                    enemyNum[i].add(c % 2);
-                }
-                else {
-                    enemyNum[i].add(0);
-                }
-            }
-
-            if(i == 0 || i == 2){
-                spawnTime[i] = 3000;
-            }
-            else spawnTime[i] = 1500;
-        }
-
-        //Create the UI
-        uiObjects.add(new UIObject(new Rect(x - 150, 0, x, y), Color.rgb(100, 100, 100)));
-
-        //Add the set button
-        uiObjects.add(new UIObject(new Rect(0, y - 250, 150, y), Color.rgb(0, 0, 0), "Set", Color.rgb(255, 255, 255), 100, 90, "AdvanceToEnemy"));
-        uiObjects.add(new UIObject(new Rect(x - 150, y - 600, x, y), Color.rgb(100, 100, 100), "Lives: ", Color.rgb(255, 255, 255), 100, 90));
-
-        //Add the display pieces
-        dispPieces.add(new DisplayPiece(Game.instance.pieceTemplates.get(0), new Point(x - 75 , 75)));
-
-        //Create the level
-        tiles.add(new Tile(new Rect(0, 0, 150, y - 150), new Point(x - 350, (y - 150) / 2), Color.rgb(0, 0, 255), Tile.Direction.down));
-        tiles.add(new Tile(new Rect(0, 0, 500, 150), new Point(x - 675, y - 225), Color.rgb(0, 0, 255), Tile.Direction.left));
-        tiles.add(new Tile(new Rect(0, 0, 150, y - 300), new Point(x - 850, (y - 300) / 2), Color.rgb(0, 0, 255), Tile.Direction.up));
     }
 
     @Override
