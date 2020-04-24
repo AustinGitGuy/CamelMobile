@@ -57,6 +57,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, View.On
         scenes = new ArrayList<>();
         scenes.add(new TitleScene(x, y));
         scenes.add(new OptionsScene(x, y));
+        scenes.add(new LevelSelectScene(x, y));
 
         //Scene 1
         {
@@ -178,7 +179,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, View.On
     }
 
     public static void ToLevelSelect(){
-        instance.curScene = 3;
+        instance.curScene = 2;
     }
 
     public static void ToOptions(){
@@ -195,6 +196,6 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, View.On
     }
 
     public static void SceneOne(){
-        instance.curScene = 2;
+        instance.curScene = 3;
     }
 }

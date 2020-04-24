@@ -20,7 +20,7 @@ public class LevelSelectScene extends Scene {
         height = y;
         uiObjects = new ArrayList<>();
         uiObjects.add(new UIObject(new Rect(x - 300, 100, x - 150, y - 100), Color.rgb(100, 100, 100), "Back to Title", Color.rgb(255, 255, 255), 100, 90, "ToTitle"));
-        uiObjects.add(new UIObject(new Rect(x - 600, 100, x - 450, y - 100), Color.rgb(100, 100, 100), "Enemy Colors", Color.rgb(255, 255, 255), 100, 90, "SceneOne"));
+        uiObjects.add(new UIObject(new Rect(x - 600, 100, x - 450, y - 100), Color.rgb(100, 100, 100), "Scene One", Color.rgb(255, 255, 255), 100, 90, "SceneOne"));
     }
 
     @Override
@@ -56,9 +56,5 @@ public class LevelSelectScene extends Scene {
     @Override
     public boolean onDrag(View v, DragEvent event){
         return false;
-    }
-
-    public void toSceneOne(){
-
     }
 }
